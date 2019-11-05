@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-3">
+        <span class="hipster img-fluid rounded"></span>
+    </div>
+    <div class="col-md-9">
+        <h1 class="display-4 text-center">Welcome to make babies!</h1>
+        <div class="col-md-12 border">
+            <div class="row">
+                <div class="col-md-6 mt-3">
+                    <div class="row justify-content-center">
+                        <div style="height: 200px; width: 200px;" class="border">
+                            <img [src]="img1" style="height: 100%; width: 100%;">
+                        </div>
+                        <div class="col-12 text-center mt-2">
+                            <p-fileUpload #fileUpload1 mode="basic" customUpload="true" accept="image/*" maxFileSize="1000000"
+                                styleClass="text-truncate" maxFileSize="1000000" (uploadHandler)="uploadFile($event, 1, fileUpload1)"
+                                chooseLabel="Choose Dad picture" auto="true"></p-fileUpload>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <div class="row justify-content-center">
+                        <div style="height: 200px; width: 200px;" class="border">
+                            <img [src]="img2" style="height: 100%; width: 100%;">
+                        </div>
+                        <div class="col-12 text-center mt-2">
+                            <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*" maxFileSize="1000000"
+                                styleClass="text-truncate" maxFileSize="1000000" (uploadHandler)="uploadFile($event,2, fileUpload2)"
+                                chooseLabel="Choose Mom picture" auto="true"></p-fileUpload>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row justify-content-center mt-2">
+                        <button class="btn btn-primary" [disabled]="!img1 || !img2" (click)="generate()">Make Baby</button>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row justify-content-center mt-3">
+                        <div class="border" style="height: 300px; width: 300px;">
+                            <img [src]="imgBaby" style="height: 100%; width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
