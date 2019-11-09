@@ -20,4 +20,8 @@ export class MakeBabyService {
   generate(data: MakeBabyRequestDTO): Observable<any> {
     return this.http.post<any>(SERVER_API_URL + 'api/generate', data, { observe: 'response' });
   }
+
+  getAll(): Observable<any> {
+    return this.http.get<any>(SERVER_API_URL + 'api/get-all', { observe: 'response' });
+  }
 }

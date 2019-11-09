@@ -1,19 +1,36 @@
 <div class="row">
-    <div class="col-md-3">
-        <span class="hipster img-fluid rounded"></span>
-    </div>
-    <div class="col-md-9">
+    <div class="col-12">
         <h1 class="display-4 text-center">Welcome to make babies!</h1>
+    </div>
+    <div class="col-md-5">
+        <p-table [value]="history" [responsive]="true" [paginator]="true" [rows]="10" class="text-center">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>STT</th>
+                    <th>Ngày tạo</th>
+                    <th>Xem</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item let-i="rowIndex">
+                <tr>
+                    <td>{{i + 1}}</td>
+                    <td>{{item.createdDate | date:'hh:mm dd/MM/yyyy'}}</td>
+                    <td><button class="btn btn-primary" (click)="loadHistory(item)">Xem lại</button></td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <div class="col-md-7">
         <div class="col-md-12 border">
             <div class="row">
                 <div class="col-md-6 mt-3">
                     <div class="row justify-content-center">
                         <div style="height: 200px; width: 200px;" class="border">
-                            <img [src]="img1" style="height: 100%; width: 100%;">
+                            <img [src]="img1 ? img1 : 'content/images/dad.jpg'" style="height: 100%; width: 100%;">
                         </div>
                         <div class="col-12 text-center mt-2">
-                            <p-fileUpload #fileUpload1 mode="basic" customUpload="true" accept="image/*" maxFileSize="1000000"
-                                styleClass="text-truncate" maxFileSize="1000000" (uploadHandler)="uploadFile($event, 1, fileUpload1)"
+                            <p-fileUpload #fileUpload1 mode="basic" customUpload="true" accept="image/*"
+                                styleClass="text-truncate" (uploadHandler)="uploadFile($event, 1, fileUpload1)"
                                 chooseLabel="Choose Dad picture" auto="true"></p-fileUpload>
                         </div>
                     </div>
@@ -21,24 +38,36 @@
                 <div class="col-md-6 mt-3">
                     <div class="row justify-content-center">
                         <div style="height: 200px; width: 200px;" class="border">
-                            <img [src]="img2" style="height: 100%; width: 100%;">
+                            <img [src]="img2 ? img2 : 'content/images/mom.jpg'" style="height: 100%; width: 100%;">
                         </div>
                         <div class="col-12 text-center mt-2">
-                            <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*" maxFileSize="1000000"
-                                styleClass="text-truncate" maxFileSize="1000000" (uploadHandler)="uploadFile($event,2, fileUpload2)"
+                            <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*"
+                                styleClass="text-truncate" (uploadHandler)="uploadFile($event,2, fileUpload2)"
                                 chooseLabel="Choose Mom picture" auto="true"></p-fileUpload>
                         </div>
                     </div>
                 </div>
                 <div class="col-12">
                     <div class="row justify-content-center mt-2">
-                        <button class="btn btn-primary" [disabled]="!img1 || !img2" (click)="generate()">Make Baby</button>
+                        <button class="btn btn-primary" [disabled]="!img1 || !img2 || viewOld" (click)="generate()">Make
+                            Baby</button>
                     </div>
                 </div>
                 <div class="col-12">
                     <div class="row justify-content-center mt-3">
                         <div class="border" style="height: 300px; width: 300px;">
-                            <img [src]="imgBaby" style="height: 100%; width: 100%;">
+                            <img [src]="imgBaby ? imgBaby : 'content/images/baby.jpg'"
+                                style="height: 100%; width: 100%;">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 my-2" *ngIf="imgBaby && !viewOld">
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-4">
+                            <div class="d-flex justify-content-between">
+                                <fb-like url={{imgBaby}}></fb-like>
+                                <tweet url={{imgBaby}} text={{text}}></tweet>
+                            </div>
                         </div>
                     </div>
                 </div>

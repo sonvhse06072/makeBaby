@@ -18,9 +18,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   account: Account;
   authSubscription: Subscription;
   modalRef: NgbModalRef;
+  baseDir = 'content/images/';
+  viewOld = false;
   img1: any;
   img2: any;
   imgBaby: any;
+  history = [];
   constructor(
     private accountService: AccountService,
     private loginModalService: LoginModalService,
@@ -33,6 +36,24 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.account = account;
     });
     this.registerAuthenticationSuccess();
+    this.getAllHistory();
+  }
+
+  getAllHistory() {
+    this.makeBabyService.getAll().subscribe(
+      (res: any) => {
+        this.history = res.body;
+        // eslint-disable-next-line no-console
+        console.log('res: ', res.body);
+      }
+    )
+  }
+
+  loadHistory(item) {
+    this.img1 = this.baseDir + item.img1;
+    this.img2 = this.baseDir + item.img2;
+    this.imgBaby = this.baseDir + item.imgRes;
+    this.viewOld = true;
   }
 
   registerAuthenticationSuccess() {
@@ -58,6 +79,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   uploadFile(event, check, fileUpload) {
+    if (this.viewOld) {
+      this.img1 = null;
+      this.img2 = null;
+      this.imgBaby = null;
+      this.viewOld = false;
+    }
     this.makeBabyService.upload(event.files[0]).subscribe(
       (res: any) => {
         // eslint-disable-next-line no-console
