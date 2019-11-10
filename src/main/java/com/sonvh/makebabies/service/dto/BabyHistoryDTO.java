@@ -8,6 +8,9 @@ public class BabyHistoryDTO {
     private Long id;
     private String img1;
     private String img2;
+    private String gender;
+    private String ethnicity;
+    private String babyname;
     private String imgRes;
     private String createdBy;
     private Instant createdDate;
@@ -21,11 +24,38 @@ public class BabyHistoryDTO {
         this.id = babyHistory.getId();
         this.img1 = babyHistory.getImg1();
         this.img2 = babyHistory.getImg2();
+        this.gender = babyHistory.getGender();
+        this.ethnicity = babyHistory.getEthnicity();
+        this.babyname = babyHistory.getBabyname();
         this.imgRes = babyHistory.getImgRes();
         this.createdBy = babyHistory.getCreatedBy();
         this.createdDate = babyHistory.getCreatedDate();
         this.lastModifiedBy = babyHistory.getLastModifiedBy();
         this.lastModifiedDate = babyHistory.getLastModifiedDate();
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getEthnicity() {
+        return ethnicity;
+    }
+
+    public void setEthnicity(String ethnicity) {
+        this.ethnicity = ethnicity;
+    }
+
+    public String getBabyname() {
+        return babyname;
+    }
+
+    public void setBabyname(String babyname) {
+        this.babyname = babyname;
     }
 
     public String getCreatedBy() {

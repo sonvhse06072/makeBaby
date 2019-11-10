@@ -1,8 +1,10 @@
 package com.sonvh.makebabies.service;
 
+import com.sonvh.makebabies.config.ApplicationProperties;
 import com.sonvh.makebabies.domain.BabyHistory;
 import com.sonvh.makebabies.repository.BabyHistoryRepository;
 import com.sonvh.makebabies.service.dto.GenerateDTO;
+import com.sonvh.makebabies.web.rest.errors.StorageFileNotFoundException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,6 +16,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,11 +26,18 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
 public class MakeBabiesService {
+    private final Path rootLocation;
+    public MakeBabiesService(ApplicationProperties properties) {
+        this.rootLocation = Paths.get(properties.getBaseLocation());
+    }
 
     @Autowired
     private BabyHistoryRepository babyHistoryRepository;
@@ -60,9 +71,16 @@ public class MakeBabiesService {
         json.put("img1", generateDTO.getImg1());
         json.put("img2", generateDTO.getImg2());
         json.put("frame", "img/frames/thumbnail/Frame_2_.png");
-        json.put("gender", "either");
-        json.put("ethnicity", "auto");
-
+        if (generateDTO.getGender()!=null) {
+            json.put("gender", generateDTO.getGender());
+        } else {
+            json.put("gender", "either");
+        }
+        if (generateDTO.getEthnicity()!=null) {
+            json.put("ethnicity", generateDTO.getEthnicity());
+        } else {
+            json.put("ethnicity", "auto");
+        }
         StringEntity params = new StringEntity(json.toString());
         httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
         httpPost.setEntity(params);
@@ -74,11 +92,11 @@ public class MakeBabiesService {
             content += body + "\n";
         }
         System.out.println(content);
-        this.saveResult(generateDTO.getImg1(), generateDTO.getImg2(), content);
+        this.saveResult(generateDTO.getImg1(), generateDTO.getImg2(), content, generateDTO.getBabyname(), generateDTO.getGender(), generateDTO.getEthnicity());
         return content;
     }
 
-    public void saveResult(String img1, String img2, String res) throws JSONException {
+    public void saveResult(String img1, String img2, String res, String babyname, String gender, String ethnicity) throws JSONException {
         JSONObject object = new JSONObject(res);
         String imgRes = object.getString("result_url");
         System.out.println("*********** img res**********" + imgRes);
@@ -96,14 +114,22 @@ public class MakeBabiesService {
             // create timeStamp
             Long timeStamp = Long.valueOf(String.valueOf(System.currentTimeMillis()));
 
-            ImageIO.write(image1, "jpg",new File("src/main/webapp/content/images/img1" + timeStamp +".jpg"));
-            ImageIO.write(image2, "jpg",new File("src/main/webapp/content/images/img2" + timeStamp +".jpg"));
-            ImageIO.write(imageRes, "jpg",new File("src/main/webapp/content/images/img3" + timeStamp +".jpg"));
+//            ImageIO.write(image1, "jpg",new File("src/main/webapp/content/images/img1" + timeStamp +".jpg"));
+//            ImageIO.write(image2, "jpg",new File("src/main/webapp/content/images/img2" + timeStamp +".jpg"));
+//            ImageIO.write(imageRes, "jpg",new File("src/main/webapp/content/images/img3" + timeStamp +".jpg"));
+            System.out.println(rootLocation + "\\img1" + timeStamp +".jpg");
+
+            ImageIO.write(image1, "jpg",new File(rootLocation + "\\img1" + timeStamp +".jpg"));
+            ImageIO.write(image2, "jpg",new File( rootLocation + "\\img2" + timeStamp +".jpg"));
+            ImageIO.write(imageRes, "jpg",new File( rootLocation + "\\img3" + timeStamp +".jpg"));
 
             BabyHistory babyHistory = new BabyHistory();
             babyHistory.setImg1("img1" + timeStamp + ".jpg");
             babyHistory.setImg2("img2" + timeStamp + ".jpg");
             babyHistory.setImgRes("img3" + timeStamp + ".jpg");
+            babyHistory.setBabyname(babyname);
+            babyHistory.setGender(gender);
+            babyHistory.setEthnicity(ethnicity);
             this.babyHistoryRepository.save(babyHistory);
         }catch(IOException e){
             e.printStackTrace();
@@ -112,5 +138,25 @@ public class MakeBabiesService {
 
     public List<BabyHistory> getAll() {
         return babyHistoryRepository.findAll(new Sort(Sort.Direction.DESC, "createdDate"));
+    }
+
+    public Resource loadAsResource(String filename) {
+        System.out.println("**************" + filename);
+        try {
+            Path file = load(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new StorageFileNotFoundException(
+                    "Could not read file: " + filename);
+            }
+        } catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+        }
+    }
+
+    public Path load(String filename) {
+        return rootLocation.resolve(filename);
     }
 }

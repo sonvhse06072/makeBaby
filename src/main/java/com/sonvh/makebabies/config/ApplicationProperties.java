@@ -10,4 +10,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
+    public String baseLocation;
+
+    public String getBaseLocation() {
+        return baseLocation;
+    }
+
+    public void setBaseLocation(String baseLocation) {
+        this.baseLocation = baseLocation;
+    }
 }

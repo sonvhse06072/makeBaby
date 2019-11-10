@@ -4,18 +4,27 @@
     </div>
     <div class="col-md-5">
         <p-table [value]="history" [responsive]="true" [paginator]="true" [rows]="10" class="text-center">
+            <ng-template pTemplate="caption">
+                <b>BABY MADE HISTORY</b>
+            </ng-template>
             <ng-template pTemplate="header">
                 <tr>
-                    <th>STT</th>
-                    <th>Ngày tạo</th>
-                    <th>Xem</th>
+                    <th class="p-1">No</th>
+                    <th colspan="2">Baby name</th>
+                    <th colspan="2">Gender</th>
+                    <th colspan="2">Skin tone</th>
+                    <th colspan="3">Created Date</th>
+                    <th colspan="2"></th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-item let-i="rowIndex">
                 <tr>
                     <td>{{i + 1}}</td>
-                    <td>{{item.createdDate | date:'hh:mm dd/MM/yyyy'}}</td>
-                    <td><button class="btn btn-primary" (click)="loadHistory(item)">Xem lại</button></td>
+                    <td colspan="2">{{item.babyname}}</td>
+                    <td colspan="2">{{item.gender}}</td>
+                    <td colspan="2">{{item.ethnicity}}</td>
+                    <td colspan="3">{{item.createdDate | date:'hh:mm dd/MM/yyyy'}}</td>
+                    <td colspan="2"><button class="btn btn-primary" (click)="loadHistory(item)">View</button></td>
                 </tr>
             </ng-template>
         </p-table>
@@ -23,50 +32,105 @@
     <div class="col-md-7">
         <div class="col-md-12 border">
             <div class="row">
-                <div class="col-md-6 mt-3">
+                <div class="col-md-6 mt-3 d-flex flex-column">
                     <div class="row justify-content-center">
                         <div style="height: 200px; width: 200px;" class="border">
                             <img [src]="img1 ? img1 : 'content/images/dad.jpg'" style="height: 100%; width: 100%;">
                         </div>
-                        <div class="col-12 text-center mt-2">
+                        <div class="col-12 text-center mt-1">
                             <p-fileUpload #fileUpload1 mode="basic" customUpload="true" accept="image/*"
                                 styleClass="text-truncate" (uploadHandler)="uploadFile($event, 1, fileUpload1)"
                                 chooseLabel="Choose Dad picture" auto="true"></p-fileUpload>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 mt-3">
-                    <div class="row justify-content-center">
-                        <div style="height: 200px; width: 200px;" class="border">
-                            <img [src]="img2 ? img2 : 'content/images/mom.jpg'" style="height: 100%; width: 100%;">
-                        </div>
-                        <div class="col-12 text-center mt-2">
+                    <div class="row justify-content-center mt-auto mb-3">
+                        <div class="col-12 text-center mb-1">
                             <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*"
                                 styleClass="text-truncate" (uploadHandler)="uploadFile($event,2, fileUpload2)"
                                 chooseLabel="Choose Mom picture" auto="true"></p-fileUpload>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="row justify-content-center mt-2">
-                        <button class="btn btn-primary" [disabled]="!img1 || !img2 || viewOld" (click)="generate()">Make
-                            Baby</button>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="row justify-content-center mt-3">
-                        <div class="border" style="height: 300px; width: 300px;">
-                            <img [src]="imgBaby ? imgBaby : 'content/images/baby.jpg'"
-                                style="height: 100%; width: 100%;">
+                        <div style="height: 200px; width: 200px;" class="border">
+                            <img [src]="img2 ? img2 : 'content/images/mom.jpg'" style="height: 100%; width: 100%;">
                         </div>
                     </div>
                 </div>
-                <div class="col-12 my-2" *ngIf="imgBaby && !viewOld">
-                    <div class="row justify-content-center align-items-center">
-                        <div class="col-4">
-                            <div class="d-flex justify-content-between">
-                                <fb-like url={{imgBaby}}></fb-like>
-                                <tweet url={{imgBaby}} text={{text}}></tweet>
+                <div class="col-md-6 mt-3">
+                    <div class="col-12">
+                        <b>Baby name:</b>
+                        <input type="text" class="form-control" [(ngModel)]="babyname">
+                    </div>
+                    <div class="col-12">
+                        <b>I hope for a:</b>
+                        <div class="col-form-label">
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="gender1" type="radio" value="girl" name="genders"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="gender1">Baby girl</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="gender2" type="radio" value="boy" name="genders"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="gender2">Baby boy</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="gender3" type="radio" value="either" name="genders"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="gender3">Either</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <b>Select Skin tone:</b>
+                        <div class="col-form-label">
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity1" type="radio" value="auto"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity1">Auto-detect</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity2" type="radio" value="caucasian"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity2">Light</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity3" type="radio" value="mixed"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity3">Dark</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity4" type="radio" value="african"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity4">Very Dark</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity5" type="radio" value="asian"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity5">Asian</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row justify-content-center mt-2">
+                            <button class="btn btn-primary" [disabled]="!img1 || !img2 || viewOld"
+                                (click)="generate()">Make
+                                Baby</button>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="row justify-content-center mt-3">
+                            <div class="border" style="height: 300px; width: 300px;">
+                                <img [src]="imgBaby ? imgBaby : 'content/images/baby.jpg'"
+                                    style="height: 100%; width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 my-2" *ngIf="imgBaby && !viewOld">
+                        <div class="row justify-content-center align-items-center">
+                            <div class="col-4">
+                                <div class="d-flex justify-content-between">
+                                    <fb-like url={{imgBaby}}></fb-like>
+                                    <tweet url={{imgBaby}} text={{text}}></tweet>
+                                </div>
                             </div>
                         </div>
                     </div>
