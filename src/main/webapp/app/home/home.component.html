@@ -111,9 +111,9 @@
                     </div>
                     <div class="col-12">
                         <div class="row justify-content-center mt-2">
+                            <button class="btn btn-warning mr-2" (click)="clear()">Clear</button>
                             <button class="btn btn-primary" [disabled]="!img1 || !img2 || viewOld"
-                                (click)="generate()">Make
-                                Baby</button>
+                                (click)="generate()">Make Baby</button>
                         </div>
                     </div>
                     <div class="col-12 mb-3">
@@ -126,7 +126,7 @@
                     </div>
                     <div class="col-12 my-2" *ngIf="imgBaby && !viewOld">
                         <div class="row justify-content-center align-items-center">
-                            <div class="col-4">
+                            <div class="col-12">
                                 <div class="d-flex justify-content-between">
                                     <fb-like url={{imgBaby}}></fb-like>
                                     <tweet url={{imgBaby}} text={{text}}></tweet>

@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private loginModalService: LoginModalService,
     private eventManager: JhiEventManager,
     private makeBabyService: MakeBabyService,
-    private sanitizer:DomSanitizer
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
@@ -63,6 +63,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.ethnicity = item.ethnicity;
     this.babyname = item.babyname;
     this.viewOld = true;
+  }
+
+  clear() {
+    this.img1 = null;
+    this.img2 = null;
+    this.imgBaby = null;
+    this.gender = 'either';
+    this.ethnicity = 'auto';
+    this.babyname = 'Huy';
+    this.viewOld = false;
   }
 
   registerAuthenticationSuccess() {
@@ -113,9 +123,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.makeBabyService.generate(data).subscribe(
         (res: any) => {
           // eslint-disable-next-line no-console
-        console.log('res: ', res.body);
-        this.imgBaby = res.body.result_url;
-        this.getAllHistory();
+          console.log('res: ', res.body);
+          this.imgBaby = res.body.result_url;
+          this.getAllHistory();
         }
       )
     }

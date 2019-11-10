@@ -8,7 +8,7 @@ module.exports = (options) => ({
     resolve: {
         extensions: ['.ts', '.js'],
         modules: ['node_modules'],
-        mainFields: [ 'es2015', 'browser', 'module', 'main'],
+        mainFields: ['es2015', 'browser', 'module', 'main'],
         alias: utils.mapTypescriptAliasToWebpackAlias()
     },
     stats: {
@@ -22,9 +22,9 @@ module.exports = (options) => ({
                 options: {
                     minimize: true,
                     caseSensitive: true,
-                    removeAttributeQuotes:false,
-                    minifyJS:false,
-                    minifyCSS:false
+                    removeAttributeQuotes: false,
+                    minifyJS: false,
+                    minifyCSS: false
                 },
                 exclude: /(src\/main\/webapp\/index.html)/
             },
@@ -64,9 +64,11 @@ module.exports = (options) => ({
             }
         }),
         new CopyWebpackPlugin([
-            { from: './node_modules/swagger-ui/dist/css', to: 'swagger-ui/dist/css' },
-            { from: './node_modules/swagger-ui/dist/lib', to: 'swagger-ui/dist/lib' },
-            { from: './node_modules/swagger-ui/dist/swagger-ui.min.js', to: 'swagger-ui/dist/swagger-ui.min.js' },
+            // { from: './node_modules/swagger-ui/dist/css', to: 'swagger-ui/dist/css' },
+            // { from: './node_modules/swagger-ui/dist/lib', to: 'swagger-ui/dist/lib' },
+            // { from: './node_modules/swagger-ui/dist/swagger-ui.min.js', to: 'swagger-ui/dist/swagger-ui.min.js' },
+            { from: './node_modules/swagger-ui/dist/swagger-ui.css', to: 'swagger-ui/dist/swagger-ui.css' },
+            { from: './node_modules/swagger-ui/dist/swagger-ui.js', to: 'swagger-ui/dist/swagger-ui.js' },
             { from: './src/main/webapp/swagger-ui/', to: 'swagger-ui' },
             { from: './src/main/webapp/content/', to: 'content' },
             { from: './src/main/webapp/favicon.ico', to: 'favicon.ico' },
