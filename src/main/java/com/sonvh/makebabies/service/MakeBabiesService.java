@@ -1,9 +1,6 @@
 package com.sonvh.makebabies.service;
 
 import com.sonvh.makebabies.config.ApplicationProperties;
-import com.sonvh.makebabies.domain.BabyHistory;
-import com.sonvh.makebabies.repository.BabyHistoryRepository;
-import com.sonvh.makebabies.service.dto.BabyHistoryDTO;
 import com.sonvh.makebabies.service.dto.GenerateDTO;
 import com.sonvh.makebabies.web.rest.errors.StorageFileNotFoundException;
 import org.apache.http.HttpEntity;
@@ -39,9 +36,6 @@ public class MakeBabiesService {
     public MakeBabiesService(ApplicationProperties properties) {
         this.rootLocation = Paths.get(properties.getBaseLocation());
     }
-
-    @Autowired
-    private BabyHistoryRepository babyHistoryRepository;
 
     public String postImage1(MultipartFile file) throws IOException {
         HttpClient httpclient = new DefaultHttpClient();
@@ -94,26 +88,6 @@ public class MakeBabiesService {
         }
         System.out.println(content);
         return content;
-    }
-
-    public BabyHistory saveHistory(BabyHistoryDTO babyHistoryDTO) {
-        BabyHistory babyHistory = new BabyHistory();
-        babyHistory.setBabyname(babyHistoryDTO.getBabyname());
-        babyHistory.setEthnicity(babyHistoryDTO.getEthnicity());
-        babyHistory.setGender(babyHistoryDTO.getGender());
-        babyHistory.setImgMom(babyHistoryDTO.getImgMom());
-        babyHistory.setDadAndSons(babyHistoryDTO.getDadAndSons());
-        return babyHistoryRepository.save(babyHistory);
-    }
-
-    public List<BabyHistory> getAll() {
-        return babyHistoryRepository.findAll(new Sort(Sort.Direction.DESC, "createdDate"));
-    }
-
-    public void delete(Long id) {
-        this.babyHistoryRepository.findById(id).ifPresent(
-            history -> babyHistoryRepository.delete(history)
-        );
     }
 
     public Resource loadAsResource(String filename) {

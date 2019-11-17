@@ -1,8 +1,5 @@
 package com.sonvh.makebabies.service.dto;
 
-import com.sonvh.makebabies.domain.BabyHistory;
-import org.apache.http.entity.mime.content.ContentBody;
-
 public class GenerateDTO {
     String img1;
     String img2;

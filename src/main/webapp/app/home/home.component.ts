@@ -7,7 +7,6 @@ import { MakeBabyService } from 'app/core/make-baby/make-baby.service';
 import { MakeBabyRequestDTO } from 'app/core/make-baby/make-baby-request.model';
 import { SERVER_API_URL } from 'app/app.constants';
 import { MakeBabyDTO } from './MakeBabyDTO.model';
-import { HistoryRequestDTO } from 'app/core/make-baby/history-save.model';
 
 @Component({
   selector: 'jhi-home',
@@ -18,15 +17,11 @@ export class HomeComponent implements OnInit {
   account: Account;
   authSubscription: Subscription;
   modalRef: NgbModalRef;
-  baseDir = SERVER_API_URL + '/api/upload/files/';
-  viewOld = false;
   makeBabyDTO: MakeBabyDTO[] = [];
   imgMom: any;
   gender = 'either';
   ethnicity = 'auto';
   babyname = 'Huy';
-  history = [];
-  historyId;
   isLoadingMom = false;
   constructor(
     private eventManager: JhiEventManager,
@@ -34,50 +29,6 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getAllHistory();
-  }
-
-  getAllHistory() {
-    this.makeBabyService.getAll().subscribe(
-      (res: any) => {
-        this.history = res.body;
-        // eslint-disable-next-line no-console
-        console.log('res: ', res.body);
-      }
-    )
-  }
-
-  save() {
-    const dadAndSon = [];
-    this.makeBabyDTO.forEach(item => {
-      dadAndSon.push({ imgDad: item.dad, imgSon: item.baby });
-    })
-    // eslint-disable-next-line no-console
-    console.log('test dad and son: ', dadAndSon);
-    const history: HistoryRequestDTO = new HistoryRequestDTO(this.imgMom, this.gender, this.ethnicity, this.babyname, dadAndSon);
-    // eslint-disable-next-line no-console
-    console.log('test save: ', history);
-    this.makeBabyService.saveHistory(history).subscribe(
-      (res: any) => {
-        // eslint-disable-next-line no-console
-        console.log('save res: ', res.body);
-        this.getAllHistory();
-      }
-    )
-  }
-
-  loadHistory(item) {
-    this.makeBabyDTO = [];
-    this.imgMom = item.imgMom;
-    this.gender = item.gender;
-    this.ethnicity = item.ethnicity;
-    this.babyname = item.babyname;
-    this.historyId = item.id;
-    item.dadAndSons.map(element => {
-      const dto = new MakeBabyDTO(null, element.imgDad, element.imgSon);
-      this.makeBabyDTO.push(dto);
-    })
-    this.viewOld = true;
   }
 
   clear() {
@@ -86,26 +37,14 @@ export class HomeComponent implements OnInit {
     this.gender = 'either';
     this.ethnicity = 'auto';
     this.babyname = 'Huy';
-    this.viewOld = false;
   }
 
   clearDad() {
     this.makeBabyDTO = [];
-    if (this.viewOld) {
-      this.clear();
-      this.makeBabyService.deleteHistory(this.historyId).subscribe(
-        () => this.getAllHistory()
-      )
-    }
   }
 
   uploadMom(event, fileUpload) {
     this.isLoadingMom = true;
-    if (this.viewOld) {
-      this.imgMom = null;
-      this.makeBabyDTO = [];
-      this.viewOld = false;
-    }
     this.makeBabyService.upload(event.files[0]).subscribe(
       (res: any) => {
         // eslint-disable-next-line no-console
