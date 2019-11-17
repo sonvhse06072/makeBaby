@@ -17,6 +17,19 @@ h4 {
   font-weight: 300;
 }
 
+body .ui-fileupload .ui-fileupload-buttonbar .ui-button {
+  margin: 0;
+}
+
+body .ui-fileupload .ui-fileupload-content {
+  background-color: #ffffff;
+    padding: 0.571em 1em;
+    border: 1px solid #c8c8c8;
+    color: #333333;
+    height: 350px;
+    overflow: scroll;
+}
+
 /* Increase contrast of links to get 100% on Lighthouse Accessability Audit. Override this color if you want to change the link color, or use a Bootswatch theme */
 a,
 a:hover {

@@ -10,6 +10,7 @@ import { MakeBabyService } from 'app/core/make-baby/make-baby.service';
 import { MakeBabyRequestDTO } from 'app/core/make-baby/make-baby-response.model';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SERVER_API_URL } from 'app/app.constants';
+import { MakeBabyDTO } from './MakeBabyDTO.model';
 
 @Component({
   selector: 'jhi-home',
@@ -22,13 +23,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   modalRef: NgbModalRef;
   baseDir = SERVER_API_URL + '/api/upload/files/';
   viewOld = false;
-  img1: any;
-  img2: any;
-  imgBaby: any;
+  makeBabyDTO: MakeBabyDTO[] = [];
+  imgMom: any;
   gender = 'either';
   ethnicity = 'auto';
   babyname = 'Huy';
   history = [];
+  isLoadingMom = false;
   constructor(
     private accountService: AccountService,
     private loginModalService: LoginModalService,
@@ -56,9 +57,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadHistory(item) {
-    this.img1 = this.baseDir + item.img1;
-    this.img2 = this.baseDir + item.img2;
-    this.imgBaby = this.baseDir + item.imgRes;
+    this.imgMom = this.baseDir + item.img2;
     this.gender = item.gender;
     this.ethnicity = item.ethnicity;
     this.babyname = item.babyname;
@@ -66,13 +65,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    this.img1 = null;
-    this.img2 = null;
-    this.imgBaby = null;
+    this.imgMom = null;
+    this.makeBabyDTO = [];
     this.gender = 'either';
     this.ethnicity = 'auto';
     this.babyname = 'Huy';
     this.viewOld = false;
+  }
+
+  clearDad() {
+    this.makeBabyDTO = [];
   }
 
   registerAuthenticationSuccess() {
@@ -97,37 +99,44 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  uploadFile(event, check, fileUpload) {
+  uploadMom(event, fileUpload) {
+    this.isLoadingMom = true;
     if (this.viewOld) {
-      this.img1 = null;
-      this.img2 = null;
-      this.imgBaby = null;
+      this.imgMom = null;
+      this.makeBabyDTO = [];
       this.viewOld = false;
     }
     this.makeBabyService.upload(event.files[0]).subscribe(
       (res: any) => {
         // eslint-disable-next-line no-console
         console.log('res: ', res.body);
-        if (check === 1) {
-          this.img1 = res.body.img;
-        } else {
-          this.img2 = res.body.img;
-        }
+        this.imgMom = res.body.img;
+        this.isLoadingMom = false;
       });
     fileUpload.clear();
   }
 
-  generate() {
-    if (this.img1 && this.img2) {
-      const data = new MakeBabyRequestDTO(this.img1, this.img2, this.gender, this.ethnicity, this.babyname);
-      this.makeBabyService.generate(data).subscribe(
-        (res: any) => {
-          // eslint-disable-next-line no-console
-          console.log('res: ', res.body);
-          this.imgBaby = res.body.result_url;
-          this.getAllHistory();
-        }
-      )
+  uploadDads(event, fileUpload) {
+    for (const file of event.files) {
+      const dto: MakeBabyDTO = new MakeBabyDTO(file, '', '');
+      this.makeBabyDTO.push(dto);
     }
+    this.makeBabyDTO.map(element => {
+      this.makeBabyService.upload(element.file).subscribe((res: any) => {
+        element.dad = res.body.img;
+        // eslint-disable-next-line no-console
+        console.log('res dad: ', res.body);
+        const data = new MakeBabyRequestDTO(res.body.img, this.imgMom, this.gender, this.ethnicity, this.babyname);
+        this.makeBabyService.generate(data).subscribe(
+          (result: any) => {
+            // eslint-disable-next-line no-console
+            console.log('res baby: ', result.body);
+            element.baby = result.body.result_url;
+            this.getAllHistory();
+          }
+        )
+      });
+    });
+    fileUpload.clear();
   }
 }

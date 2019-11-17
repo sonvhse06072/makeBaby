@@ -1,11 +1,11 @@
 <div class="row">
     <div class="col-12">
-        <h1 class="display-4 text-center">Welcome to make babies!</h1>
+        <h1 class="display-4 text-center">Hỗ trợ vua Hùng dự đoán cháu</h1>
     </div>
     <div class="col-md-5">
         <p-table [value]="history" [responsive]="true" [paginator]="true" [rows]="10" class="text-center">
             <ng-template pTemplate="caption">
-                <b>BABY MADE HISTORY</b>
+                <b>LỊCH SỬ DỰ ĐOÁN</b>
             </ng-template>
             <ng-template pTemplate="header">
                 <tr>
@@ -29,91 +29,102 @@
             </ng-template>
         </p-table>
     </div>
-    <div class="col-md-7">
+    <!-- <div class="col-md-7">
         <div class="col-md-12 border">
             <div class="row">
                 <div class="col-md-6 mt-3 d-flex flex-column">
                     <div class="row justify-content-center">
                         <div style="height: 200px; width: 200px;" class="border">
-                            <img [src]="img1 ? img1 : 'content/images/dad.jpg'" style="height: 100%; width: 100%;">
+                            <img [src]="img2 ? img2 : (isLoadingMom == true ? 'content/images/loading.gif' : 'content/images/mom.jpg')"
+                                style="height: 100%; width: 100%;">
                         </div>
                         <div class="col-12 text-center mt-1">
-                            <p-fileUpload #fileUpload1 mode="basic" customUpload="true" accept="image/*"
-                                styleClass="text-truncate" (uploadHandler)="uploadFile($event, 1, fileUpload1)"
-                                chooseLabel="Choose Dad picture" auto="true"></p-fileUpload>
+                            <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*"
+                                styleClass="text-truncate" (uploadHandler)="uploadFile($event,2, fileUpload2)"
+                                chooseLabel="Chọn ảnh công chúa"></p-fileUpload>
                         </div>
                     </div>
                     <div class="row justify-content-center mt-auto mb-3">
                         <div class="col-12 text-center mb-1">
-                            <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*"
-                                styleClass="text-truncate" (uploadHandler)="uploadFile($event,2, fileUpload2)"
-                                chooseLabel="Choose Mom picture" auto="true"></p-fileUpload>
+                            <p-fileUpload #fileUpload1 mode="basic" customUpload="true" accept="image/*"
+                                styleClass="text-truncate" (uploadHandler)="uploadFile($event, 1, fileUpload1)"
+                                chooseLabel="Choose Dad picture" auto="true"></p-fileUpload>
+                            <p-fileUpload #fileUpload customUpload="true"
+                                (uploadHandler)="uploadDads($event,fileUpload)" multiple="multiple" accept="image/*"
+                                maxFileSize="10000000" chooseLabel="Chọn Ảnh" uploadLabel="Tải lên" cancelLabel="Xóa">
+                                <ng-template pTemplate="content" style="height: 300px">
+                                    <ul *ngIf="uploadedFiles">
+                                        <label *ngIf="uploadedFiles.length > 0">Tải lên thành công: </label>
+                                        <li *ngFor="let file of uploadedFiles">{{file}}</li>
+                                    </ul>
+                                </ng-template>
+                            </p-fileUpload>
                         </div>
                         <div style="height: 200px; width: 200px;" class="border">
-                            <img [src]="img2 ? img2 : 'content/images/mom.jpg'" style="height: 100%; width: 100%;">
+                            <img [src]="img1 ? img1 : 'content/images/dad.jpg'" style="height: 100%; width: 100%;">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 mt-3">
                     <div class="col-12">
-                        <b>Baby name:</b>
+                        <b>Ta muốn bé tên:</b>
                         <input type="text" class="form-control" [(ngModel)]="babyname">
                     </div>
                     <div class="col-12">
-                        <b>I hope for a:</b>
+                        <b>Giới tính của bé:</b>
                         <div class="col-form-label">
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="gender1" type="radio" value="girl" name="genders"
                                     [(ngModel)]="gender">
-                                <label class="form-check-label" for="gender1">Baby girl</label>
+                                <label class="form-check-label" for="gender1">Bé gái</label>
                             </div>
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="gender2" type="radio" value="boy" name="genders"
                                     [(ngModel)]="gender">
-                                <label class="form-check-label" for="gender2">Baby boy</label>
+                                <label class="form-check-label" for="gender2">Bé trai</label>
                             </div>
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="gender3" type="radio" value="either" name="genders"
                                     [(ngModel)]="gender">
-                                <label class="form-check-label" for="gender3">Either</label>
+                                <label class="form-check-label" for="gender3">Sao cũng được</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
-                        <b>Select Skin tone:</b>
+                        <b>Màu da của bé:</b>
                         <div class="col-form-label">
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="ethnicity1" type="radio" value="auto"
                                     name="ethnicitys" [(ngModel)]="ethnicity">
-                                <label class="form-check-label" for="ethnicity1">Auto-detect</label>
+                                <label class="form-check-label" for="ethnicity1">Tự dự đoán</label>
                             </div>
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="ethnicity2" type="radio" value="caucasian"
                                     name="ethnicitys" [(ngModel)]="ethnicity">
-                                <label class="form-check-label" for="ethnicity2">Light</label>
+                                <label class="form-check-label" for="ethnicity2">Trắng</label>
                             </div>
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="ethnicity3" type="radio" value="mixed"
                                     name="ethnicitys" [(ngModel)]="ethnicity">
-                                <label class="form-check-label" for="ethnicity3">Dark</label>
+                                <label class="form-check-label" for="ethnicity3">Ngăm đen</label>
                             </div>
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="ethnicity4" type="radio" value="african"
                                     name="ethnicitys" [(ngModel)]="ethnicity">
-                                <label class="form-check-label" for="ethnicity4">Very Dark</label>
+                                <label class="form-check-label" for="ethnicity4">Rất đen</label>
                             </div>
                             <div class="form-check form-check-inline mr-1">
                                 <input class="form-check-input" id="ethnicity5" type="radio" value="asian"
                                     name="ethnicitys" [(ngModel)]="ethnicity">
-                                <label class="form-check-label" for="ethnicity5">Asian</label>
+                                <label class="form-check-label" for="ethnicity5">Vàng</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="row justify-content-center mt-2">
-                            <button class="btn btn-warning mr-2" (click)="clear()">Clear</button>
+                            <button class="btn btn-warning mr-2" (click)="clear()">Xóa</button>
                             <button class="btn btn-primary" [disabled]="!img1 || !img2 || viewOld"
-                                (click)="generate()">Make Baby</button>
+                                (click)="generate()">Dự đoán</button>
                         </div>
                     </div>
                     <div class="col-12 mb-3">
@@ -129,11 +140,139 @@
                             <div class="col-12">
                                 <div class="d-flex justify-content-between">
                                     <fb-like url={{imgBaby}}></fb-like>
-                                    <tweet url={{imgBaby}} text={{text}}></tweet>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="col-md-7">
+        <div class="col-md-12 border">
+            <div class="row my-3 border-bottom pb-3">
+                <div class="col-md-6">
+                    <div class="row justify-content-center">
+                        <div style="height: 200px; width: 200px;" class="border">
+                            <img [src]="imgMom ? imgMom : (isLoadingMom == true ? 'content/images/loading.gif' : 'content/images/mom.jpg')"
+                                style="height: 100%; width: 100%;">
+                        </div>
+                        <div class="col-12 text-center mt-1" *ngIf="!imgMom && !isLoadingMom">
+                            <p-fileUpload #fileUpload2 mode="basic" customUpload="true" accept="image/*"
+                                styleClass="text-truncate" (uploadHandler)="uploadMom($event, fileUpload2)"
+                                chooseLabel="Chọn ảnh công chúa"></p-fileUpload>
+                        </div>
+                        <div class="col-12 text-center mt-1" *ngIf="isLoadingMom">
+                            <span>Vui lòng chờ ảnh công chúa tải lên</span>
+                        </div>
+                        <div class="col-12 text-center mt-1" *ngIf="imgMom">
+                            <span>Ảnh công chúa xinh đẹp của ta</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col-12">
+                        <b>Ta muốn bé tên:</b>
+                        <input type="text" class="form-control" [(ngModel)]="babyname">
+                    </div>
+                    <div class="col-12">
+                        <b>Giới tính của bé:</b>
+                        <div class="col-form-label">
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="gender1" type="radio" value="girl" name="genders"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="gender1">Bé gái</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="gender2" type="radio" value="boy" name="genders"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="gender2">Bé trai</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="gender3" type="radio" value="either" name="genders"
+                                    [(ngModel)]="gender">
+                                <label class="form-check-label" for="gender3">Sao cũng được</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <b>Màu da của bé:</b>
+                        <div class="col-form-label">
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity1" type="radio" value="auto"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity1">Tự dự đoán</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity2" type="radio" value="caucasian"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity2">Trắng</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity3" type="radio" value="mixed"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity3">Ngăm đen</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity4" type="radio" value="african"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity4">Rất đen</label>
+                            </div>
+                            <div class="form-check form-check-inline mr-1">
+                                <input class="form-check-input" id="ethnicity5" type="radio" value="asian"
+                                    name="ethnicitys" [(ngModel)]="ethnicity">
+                                <label class="form-check-label" for="ethnicity5">Vàng</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row justify-content-center mt-2">
+                            <button class="btn btn-warning mr-2" (click)="clear()">Làm lại</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12" *ngIf="imgMom">
+                    <p-fileUpload #fileUpload customUpload="true" (uploadHandler)="uploadDads($event,fileUpload)"
+                        multiple="multiple" accept="image/*" maxFileSize="10000000" chooseLabel="Chọn Ứng viên"
+                        uploadLabel="Dự đoán" [showCancelButton]="false">
+                        <ng-template pTemplate="toolbar">
+                            <div class="float-right">
+                                <button type="button" pButton label="Xóa" (click)="clearDad()"></button>
+                            </div>
+                        </ng-template>
+                        <ng-template let-file pTemplate="file">
+                            <div class="my-2" style="height: 150px; width: 150px;">
+                                <img [src]="file.objectURL" alt="" style="height: 100%; width: 100%;">
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                            <div *ngFor="let item of makeBabyDTO; let i = index">
+                                <div class="my-2 d-flex align-items-center justify-content-between">
+                                    <div style="height: 150px; width: 150px;">
+                                        <img [src]="item?.file?.objectURL" alt="" style="height: 100%; width: 100%;">
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <h2 class="m-0">+</h2>
+                                    </button>
+                                    <div style="height: 150px; width: 150px;">
+                                        <img [src]="imgMom" alt="" style="height: 100%; width: 100%;">
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <h2 class="m-0">=</h2>
+                                    </button>
+                                    <div style="height: 150px; width: 150px;">
+                                        <img [src]="item?.baby ? item?.baby : 'content/images/loading.gif'" alt=""
+                                            style="height: 100%; width: 100%;">
+                                        <div class="position-absolute" *ngIf="item.baby">
+                                            <fb-like url={{item?.baby}}></fb-like>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-fileUpload>
                 </div>
             </div>
         </div>
