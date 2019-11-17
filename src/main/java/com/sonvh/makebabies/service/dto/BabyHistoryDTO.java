@@ -1,17 +1,18 @@
 package com.sonvh.makebabies.service.dto;
 
 import com.sonvh.makebabies.domain.BabyHistory;
+import com.sonvh.makebabies.domain.DadAndSon;
 
 import java.time.Instant;
+import java.util.Set;
 
 public class BabyHistoryDTO {
     private Long id;
-    private String img1;
-    private String img2;
+    private String imgMom;
     private String gender;
     private String ethnicity;
     private String babyname;
-    private String imgRes;
+    private Set<DadAndSon> dadAndSons;
     private String createdBy;
     private Instant createdDate;
     private String lastModifiedBy;
@@ -22,12 +23,11 @@ public class BabyHistoryDTO {
 
     public BabyHistoryDTO(BabyHistory babyHistory) {
         this.id = babyHistory.getId();
-        this.img1 = babyHistory.getImg1();
-        this.img2 = babyHistory.getImg2();
+        this.imgMom = babyHistory.getImgMom();
         this.gender = babyHistory.getGender();
         this.ethnicity = babyHistory.getEthnicity();
         this.babyname = babyHistory.getBabyname();
-        this.imgRes = babyHistory.getImgRes();
+        this.dadAndSons = babyHistory.getDadAndSons();
         this.createdBy = babyHistory.getCreatedBy();
         this.createdDate = babyHistory.getCreatedDate();
         this.lastModifiedBy = babyHistory.getLastModifiedBy();
@@ -98,27 +98,19 @@ public class BabyHistoryDTO {
         this.id = id;
     }
 
-    public String getImg1() {
-        return img1;
+    public String getImgMom() {
+        return imgMom;
     }
 
-    public void setImg1(String img1) {
-        this.img1 = img1;
+    public void setImgMom(String imgMom) {
+        this.imgMom = imgMom;
     }
 
-    public String getImg2() {
-        return img2;
+    public Set<DadAndSon> getDadAndSons() {
+        return dadAndSons;
     }
 
-    public void setImg2(String img2) {
-        this.img2 = img2;
-    }
-
-    public String getImgRes() {
-        return imgRes;
-    }
-
-    public void setImgRes(String imgRes) {
-        this.imgRes = imgRes;
+    public void setDadAndSons(Set<DadAndSon> dadAndSons) {
+        this.dadAndSons = dadAndSons;
     }
 }

@@ -1,23 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { JhiEventManager } from 'ng-jhipster';
-
-import { LoginModalService } from 'app/core/login/login-modal.service';
-import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/user/account.model';
 import { MakeBabyService } from 'app/core/make-baby/make-baby.service';
-import { MakeBabyRequestDTO } from 'app/core/make-baby/make-baby-response.model';
-import { DomSanitizer } from '@angular/platform-browser';
+import { MakeBabyRequestDTO } from 'app/core/make-baby/make-baby-request.model';
 import { SERVER_API_URL } from 'app/app.constants';
 import { MakeBabyDTO } from './MakeBabyDTO.model';
+import { HistoryRequestDTO } from 'app/core/make-baby/history-save.model';
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrls: ['home.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   account: Account;
   authSubscription: Subscription;
   modalRef: NgbModalRef;
@@ -29,20 +26,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   ethnicity = 'auto';
   babyname = 'Huy';
   history = [];
+  historyId;
   isLoadingMom = false;
   constructor(
-    private accountService: AccountService,
-    private loginModalService: LoginModalService,
     private eventManager: JhiEventManager,
-    private makeBabyService: MakeBabyService,
-    private sanitizer: DomSanitizer
+    private makeBabyService: MakeBabyService
   ) { }
 
   ngOnInit() {
-    this.accountService.identity().subscribe((account: Account) => {
-      this.account = account;
-    });
-    this.registerAuthenticationSuccess();
     this.getAllHistory();
   }
 
@@ -56,11 +47,36 @@ export class HomeComponent implements OnInit, OnDestroy {
     )
   }
 
+  save() {
+    const dadAndSon = [];
+    this.makeBabyDTO.forEach(item => {
+      dadAndSon.push({ imgDad: item.dad, imgSon: item.baby });
+    })
+    // eslint-disable-next-line no-console
+    console.log('test dad and son: ', dadAndSon);
+    const history: HistoryRequestDTO = new HistoryRequestDTO(this.imgMom, this.gender, this.ethnicity, this.babyname, dadAndSon);
+    // eslint-disable-next-line no-console
+    console.log('test save: ', history);
+    this.makeBabyService.saveHistory(history).subscribe(
+      (res: any) => {
+        // eslint-disable-next-line no-console
+        console.log('save res: ', res.body);
+        this.getAllHistory();
+      }
+    )
+  }
+
   loadHistory(item) {
-    this.imgMom = this.baseDir + item.img2;
+    this.makeBabyDTO = [];
+    this.imgMom = item.imgMom;
     this.gender = item.gender;
     this.ethnicity = item.ethnicity;
     this.babyname = item.babyname;
+    this.historyId = item.id;
+    item.dadAndSons.map(element => {
+      const dto = new MakeBabyDTO(null, element.imgDad, element.imgSon);
+      this.makeBabyDTO.push(dto);
+    })
     this.viewOld = true;
   }
 
@@ -75,27 +91,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   clearDad() {
     this.makeBabyDTO = [];
-  }
-
-  registerAuthenticationSuccess() {
-    this.authSubscription = this.eventManager.subscribe('authenticationSuccess', message => {
-      this.accountService.identity().subscribe(account => {
-        this.account = account;
-      });
-    });
-  }
-
-  isAuthenticated() {
-    return this.accountService.isAuthenticated();
-  }
-
-  login() {
-    this.modalRef = this.loginModalService.open();
-  }
-
-  ngOnDestroy() {
-    if (this.authSubscription) {
-      this.eventManager.destroy(this.authSubscription);
+    if (this.viewOld) {
+      this.clear();
+      this.makeBabyService.deleteHistory(this.historyId).subscribe(
+        () => this.getAllHistory()
+      )
     }
   }
 
@@ -132,7 +132,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             // eslint-disable-next-line no-console
             console.log('res baby: ', result.body);
             element.baby = result.body.result_url;
-            this.getAllHistory();
           }
         )
       });

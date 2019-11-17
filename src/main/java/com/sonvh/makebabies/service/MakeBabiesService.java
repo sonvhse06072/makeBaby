@@ -3,6 +3,7 @@ package com.sonvh.makebabies.service;
 import com.sonvh.makebabies.config.ApplicationProperties;
 import com.sonvh.makebabies.domain.BabyHistory;
 import com.sonvh.makebabies.repository.BabyHistoryRepository;
+import com.sonvh.makebabies.service.dto.BabyHistoryDTO;
 import com.sonvh.makebabies.service.dto.GenerateDTO;
 import com.sonvh.makebabies.web.rest.errors.StorageFileNotFoundException;
 import org.apache.http.HttpEntity;
@@ -92,55 +93,27 @@ public class MakeBabiesService {
             content += body + "\n";
         }
         System.out.println(content);
-        this.saveResult(generateDTO.getImg1(), generateDTO.getImg2(), content, generateDTO.getBabyname(), generateDTO.getGender(), generateDTO.getEthnicity());
         return content;
     }
 
-    public void saveResult(String img1, String img2, String res, String babyname, String gender, String ethnicity) throws JSONException {
-        System.out.println("img1: " + img1);
-        System.out.println("img2: " + img2);
-        System.out.println("res: " + res);
-//        JSONObject object = new JSONObject(res);
-//        String imgRes = object.getString("result_url");
-//        System.out.println("*********** img res**********" + imgRes);
-//        BufferedImage image1 = null;
-//        BufferedImage image2 = null;
-//        BufferedImage imageRes = null;
-//        try{
-//            URL url1 = new URL(img1);
-//            URL url2 = new URL(img2);
-//            URL urlRes =new URL(imgRes);
-//            // read the url
-//            image1 = ImageIO.read(url1);
-//            image2 = ImageIO.read(url2);
-//            imageRes = ImageIO.read(urlRes);
-//            // create timeStamp
-//            Long timeStamp = Long.valueOf(String.valueOf(System.currentTimeMillis()));
-//
-////            ImageIO.write(image1, "jpg",new File("src/main/webapp/content/images/img1" + timeStamp +".jpg"));
-////            ImageIO.write(image2, "jpg",new File("src/main/webapp/content/images/img2" + timeStamp +".jpg"));
-////            ImageIO.write(imageRes, "jpg",new File("src/main/webapp/content/images/img3" + timeStamp +".jpg"));
-//            System.out.println(rootLocation + "\\img1" + timeStamp +".jpg");
-//
-//            ImageIO.write(image1, "jpg",new File(rootLocation + "\\img1" + timeStamp +".jpg"));
-//            ImageIO.write(image2, "jpg",new File( rootLocation + "\\img2" + timeStamp +".jpg"));
-//            ImageIO.write(imageRes, "jpg",new File( rootLocation + "\\img3" + timeStamp +".jpg"));
-//
-//            BabyHistory babyHistory = new BabyHistory();
-//            babyHistory.setImg1("img1" + timeStamp + ".jpg");
-//            babyHistory.setImg2("img2" + timeStamp + ".jpg");
-//            babyHistory.setImgRes("img3" + timeStamp + ".jpg");
-//            babyHistory.setBabyname(babyname);
-//            babyHistory.setGender(gender);
-//            babyHistory.setEthnicity(ethnicity);
-//            this.babyHistoryRepository.save(babyHistory);
-//        }catch(IOException e){
-//            e.printStackTrace();
-//        }
+    public BabyHistory saveHistory(BabyHistoryDTO babyHistoryDTO) {
+        BabyHistory babyHistory = new BabyHistory();
+        babyHistory.setBabyname(babyHistoryDTO.getBabyname());
+        babyHistory.setEthnicity(babyHistoryDTO.getEthnicity());
+        babyHistory.setGender(babyHistoryDTO.getGender());
+        babyHistory.setImgMom(babyHistoryDTO.getImgMom());
+        babyHistory.setDadAndSons(babyHistoryDTO.getDadAndSons());
+        return babyHistoryRepository.save(babyHistory);
     }
 
     public List<BabyHistory> getAll() {
         return babyHistoryRepository.findAll(new Sort(Sort.Direction.DESC, "createdDate"));
+    }
+
+    public void delete(Long id) {
+        this.babyHistoryRepository.findById(id).ifPresent(
+            history -> babyHistoryRepository.delete(history)
+        );
     }
 
     public Resource loadAsResource(String filename) {

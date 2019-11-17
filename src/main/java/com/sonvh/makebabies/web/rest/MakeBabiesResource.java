@@ -34,6 +34,18 @@ public class MakeBabiesResource {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id") Long id) {
+        makeBabiesService.delete(id);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<BabyHistoryDTO> saveHistory(@RequestBody BabyHistoryDTO babyHistoryDTO) {
+        BabyHistory babyHistory = makeBabiesService.saveHistory(babyHistoryDTO);
+        BabyHistoryDTO dto = new BabyHistoryDTO(babyHistory);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
     @PostMapping("/generate")
     public ResponseEntity<String> getBabies(@RequestBody GenerateDTO generateDTO) throws IOException, JSONException {
         String res = makeBabiesService.generate(generateDTO);

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SERVER_API_URL } from 'app/app.constants';
-import { MakeBabyRequestDTO } from './make-baby-response.model';
+import { MakeBabyRequestDTO } from './make-baby-request.model';
+import { HistoryRequestDTO } from './history-save.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +24,13 @@ export class MakeBabyService {
 
   getAll(): Observable<any> {
     return this.http.get<any>(SERVER_API_URL + 'api/get-all', { observe: 'response' });
+  }
+
+  saveHistory(history: HistoryRequestDTO): Observable<any> {
+    return this.http.post<any>(SERVER_API_URL + 'api/save', history, { observe: 'response' })
+  }
+
+  deleteHistory(id: any): Observable<any> {
+    return this.http.delete<any>(`${SERVER_API_URL}/api/delete/${id}`, { observe: 'response'});
   }
 }

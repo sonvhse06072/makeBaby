@@ -1,6 +1,10 @@
 package com.sonvh.makebabies.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "baby_history")
@@ -10,14 +14,13 @@ public class BabyHistory extends AbstractAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "image1")
-    private String img1;
+    @Column(name = "image_mom")
+    private String imgMom;
 
-    @Column(name = "image2")
-    private String img2;
-
-    @Column(name = "image_res")
-    private String imgRes;
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "baby_history_id")
+    @JsonManagedReference
+    private Set<DadAndSon> dadAndSons;
 
     @Column(name = "name")
     private String babyname;
@@ -60,27 +63,19 @@ public class BabyHistory extends AbstractAuditingEntity {
         this.id = id;
     }
 
-    public String getImg1() {
-        return img1;
+    public String getImgMom() {
+        return imgMom;
     }
 
-    public void setImg1(String img1) {
-        this.img1 = img1;
+    public void setImgMom(String imgMom) {
+        this.imgMom = imgMom;
     }
 
-    public String getImg2() {
-        return img2;
+    public Set<DadAndSon> getDadAndSons() {
+        return dadAndSons;
     }
 
-    public void setImg2(String img2) {
-        this.img2 = img2;
-    }
-
-    public String getImgRes() {
-        return imgRes;
-    }
-
-    public void setImgRes(String imgRes) {
-        this.imgRes = imgRes;
+    public void setDadAndSons(Set<DadAndSon> dadAndSons) {
+        this.dadAndSons = dadAndSons;
     }
 }
