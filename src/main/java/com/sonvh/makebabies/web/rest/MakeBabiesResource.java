@@ -2,18 +2,18 @@ package com.sonvh.makebabies.web.rest;
 
 import com.sonvh.makebabies.service.MakeBabiesService;
 import com.sonvh.makebabies.service.dto.GenerateDTO;
+import com.sonvh.makebabies.service.dto.Share;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -36,10 +36,9 @@ public class MakeBabiesResource {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    @GetMapping("/upload/files/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        Resource file = makeBabiesService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    @PostMapping("/share")
+    public ResponseEntity<String> share(@RequestBody List<Share> shares) throws IOException, JSONException {
+        String res = makeBabiesService.shareForVote(shares);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

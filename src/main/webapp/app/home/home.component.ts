@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { JhiEventManager } from 'ng-jhipster';
 import { Account } from 'app/core/user/account.model';
 import { MakeBabyService } from 'app/core/make-baby/make-baby.service';
 import { MakeBabyRequestDTO } from 'app/core/make-baby/make-baby-request.model';
-import { SERVER_API_URL } from 'app/app.constants';
 import { MakeBabyDTO } from './MakeBabyDTO.model';
+import { Share } from 'app/core/make-baby/share.model';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'jhi-home',
@@ -23,9 +23,12 @@ export class HomeComponent implements OnInit {
   ethnicity = 'auto';
   babyname = 'Huy';
   isLoadingMom = false;
+  shareLink;
+  embedLink;
+  loadEmbed = false;
   constructor(
-    private eventManager: JhiEventManager,
-    private makeBabyService: MakeBabyService
+    private makeBabyService: MakeBabyService,
+    public sanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
@@ -37,10 +40,30 @@ export class HomeComponent implements OnInit {
     this.gender = 'either';
     this.ethnicity = 'auto';
     this.babyname = 'Huy';
+    this.shareLink = null;
+    this.embedLink = null;
   }
 
-  clearDad() {
-    this.makeBabyDTO = [];
+  createPoll() {
+    const dataShare = [];
+    this.loadEmbed = true;
+    this.makeBabyDTO.forEach((element, index) => {
+      if (element.baby) {
+        const tmp = new Share(element.baby, index + 1);
+        dataShare.push(tmp);
+      }
+    });
+    this.makeBabyService.share(dataShare).subscribe(
+      (res: any) => {
+        // eslint-disable-next-line no-console
+        console.log('res share: ', res.body);
+        this.shareLink = res.body.data.json.link;
+        this.embedLink = this.sanitizer.bypassSecurityTrustResourceUrl(res.body.data.json.link.replace('/vote/', '/embed/'));
+        // eslint-disable-next-line no-console
+        console.log('share link: ', this.shareLink);
+        this.loadEmbed = false;
+      }
+    )
   }
 
   uploadMom(event, fileUpload) {

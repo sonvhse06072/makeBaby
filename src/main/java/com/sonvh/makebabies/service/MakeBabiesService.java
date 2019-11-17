@@ -2,8 +2,8 @@ package com.sonvh.makebabies.service;
 
 import com.sonvh.makebabies.config.ApplicationProperties;
 import com.sonvh.makebabies.service.dto.GenerateDTO;
-import com.sonvh.makebabies.web.rest.errors.StorageFileNotFoundException;
-import org.apache.http.HttpEntity;
+import com.sonvh.makebabies.service.dto.Share;
+import com.squareup.okhttp.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -11,21 +11,11 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -90,23 +80,26 @@ public class MakeBabiesService {
         return content;
     }
 
-    public Resource loadAsResource(String filename) {
-        System.out.println("**************" + filename);
-        try {
-            Path file = load(filename);
-            Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new StorageFileNotFoundException(
-                    "Could not read file: " + filename);
-            }
-        } catch (MalformedURLException e) {
-            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+    public String shareForVote(List<Share> shares) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        String temp = "";
+        for (Share s: shares) {
+            String tmp = s.getOption() + " <img src=\"" + s.getImgLink() + "\" />\n";
+            temp += tmp;
         }
-    }
+        MediaType mediaType = MediaType.parse("multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
+        RequestBody body = RequestBody.create(mediaType, "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; " +
+            "name=\"page_id\"\r\n\r\n106397477490862\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; " +
+            "name=\"uid\"\r\n\r\n1669835436485576\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; " +
+            "name=\"question\"\r\n\r\n" + "Bé nào xinh hơn" + "\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; " +
+            "name=\"opts\"\r\n\r\n" + temp + "\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"vote\"\r\n\r\nVote\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--");
+        Request request = new Request.Builder()
+            .url("https://fans.vote/fb/create/save")
+            .post(body)
+            .addHeader("Cookie", "polls20678178440=u6t149to2n38j9mih15h67lre6")
+            .build();
 
-    public Path load(String filename) {
-        return rootLocation.resolve(filename);
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 }
